@@ -8,6 +8,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from managers.connection_manager import ConnectionManager
 from repositories.alert import AlertRepository
 from routes.alert import router as alerts_router
+from routes.websocket import router as websocket_router
 from services.alert_generator import periodic_alert_generator
 
 manager = ConnectionManager()
@@ -43,3 +44,4 @@ app.add_middleware(
 )
 app.add_middleware(GZipMiddleware, minimum_size=500)
 app.include_router(alerts_router)
+app.include_router(websocket_router)
