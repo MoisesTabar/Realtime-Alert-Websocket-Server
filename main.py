@@ -5,20 +5,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
-from managers.connection_manager import ConnectionManager
-from repositories.alert import AlertRepository
+from dependencies import alerts_repo, manager
 from routes.alert import router as alerts_router
 from routes.websocket import router as websocket_router
 from services.alert_generator import periodic_alert_generator
-
-manager = ConnectionManager()
-alerts = AlertRepository()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> None:
     # Startup
-    task = asyncio.create_task(periodic_alert_generator(manager, alerts))
+    task = asyncio.create_task(periodic_alert_generator(manager, alerts_repo))
 
     # App is running
     yield
