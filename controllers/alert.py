@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass
 
 from managers.connection_manager import ConnectionManager
@@ -11,9 +12,13 @@ class AlertController:
     repository: AlertRepository
 
     def get_history(self) -> list[Alert]:
+        logging.info("Retrieving alert history")
         return self.repository.get_all()
 
     async def post_alert(self, alert: Alert) -> Alert:
+        logging.info(f"Posting alert: {alert.id}")
         self.repository.add(alert)
-        await self.manager.broadcast_json({"type": "alert", **alert.model_dump()})
+        await self.manager.broadcast_json(
+            {"type": "alert", **alert.model_dump(mode="json")}
+        )
         return alert

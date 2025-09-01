@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
+from config import setup_logging
 from dependencies import alerts_repo, manager
 from routes.alert import router as alerts_router
 from routes.websocket import router as websocket_router
@@ -14,6 +15,7 @@ from services.alert_generator import periodic_alert_generator
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> None:
     # Startup
+    setup_logging("INFO")
     task = asyncio.create_task(periodic_alert_generator(manager, alerts_repo))
 
     # App is running
