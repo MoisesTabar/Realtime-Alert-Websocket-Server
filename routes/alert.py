@@ -1,26 +1,24 @@
 from fastapi import APIRouter, Depends
 
-from dependencies import get_alerts_repo, get_manager
-from managers.connection_manager import ConnectionManager
+from controllers.alert import AlertController
+from dependencies import get_alert_controller
 from models.alert import Alert
-from repositories.base import BaseRepository
 
 router = APIRouter(prefix="/alerts", tags=["alerts"])
 
 
 @router.get("/history", response_model=list[Alert])
-async def get_alert_history(repository: BaseRepository = Depends(get_alerts_repo)):
+async def get_alert_history(
+    controller: AlertController = Depends(get_alert_controller),
+):
     """Return last N alerts from the repository."""
-    return repository.get_all()
+    return controller.get_history()
 
 
 @router.post("/", response_model=Alert)
 async def post_alert(
     alert: Alert,
-    repository: BaseRepository = Depends(get_alerts_repo),
-    manager: ConnectionManager = Depends(get_manager),
+    controller: AlertController = Depends(get_alert_controller),
 ):
     """Add a new alert manually and broadcast it."""
-    repository.add(alert)
-    await manager.broadcast_json({"type": "alert", **alert.model_dump()})
-    return alert
+    return await controller.post_alert(alert)

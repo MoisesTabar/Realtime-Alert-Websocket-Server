@@ -1,3 +1,5 @@
+from controllers.alert import AlertController
+from controllers.websocket import WebSocketController
 from managers.connection_manager import ConnectionManager
 from repositories.alert import AlertRepository
 from repositories.chat import ChatRepository
@@ -7,14 +9,22 @@ manager = ConnectionManager()
 alerts_repo = AlertRepository()
 chats_repo = ChatRepository()
 
+# Controllers
+alert_controller = AlertController(manager, alerts_repo)
+websocket_controller = WebSocketController(manager, chats_repo)
 
-def get_alerts_repo() -> AlertRepository:
-    return alerts_repo
+__all__ = [
+    "manager",
+    "alerts_repo",
+    "chats_repo",
+    "get_alert_controller",
+    "get_websocket_controller",
+]
 
 
-def get_manager() -> ConnectionManager:
-    return manager
+def get_alert_controller() -> AlertController:
+    return alert_controller
 
 
-def get_chats_repo() -> ChatRepository:
-    return chats_repo
+def get_websocket_controller() -> WebSocketController:
+    return websocket_controller

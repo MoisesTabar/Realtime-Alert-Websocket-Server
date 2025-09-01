@@ -1,6 +1,6 @@
 import asyncio
 from datetime import datetime, timezone
-from itertools import count, cycle
+from itertools import cycle
 
 from managers.connection_manager import ConnectionManager
 from models.alert import Alert
@@ -10,10 +10,10 @@ from repositories.base import BaseRepository
 async def periodic_alert_generator(
     manager: ConnectionManager, repository: BaseRepository, interval_seconds: int = 10
 ) -> None:
-    gates = cycle(range(1, 5))
+    gates = cycle(range(0, 5))
 
     try:
-        for _ in count(1):
+        while True:
             gate = next(gates)
             alert = Alert(
                 message="Intruder detected",

@@ -1,9 +1,7 @@
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 
-from dependencies import get_chats_repo, get_manager
-from managers.connection_manager import ConnectionManager
-from models.message import ChatMessage
-from repositories.base import BaseRepository
+from controllers.websocket import WebSocketController
+from dependencies import get_websocket_controller
 
 router = APIRouter(tags=["websocket"])
 
@@ -11,17 +9,14 @@ router = APIRouter(tags=["websocket"])
 @router.websocket("/ws")
 async def websocket_endpoint(
     websocket: WebSocket,
-    manager: ConnectionManager = Depends(get_manager),
-    repository: BaseRepository = Depends(get_chats_repo),
+    controller: WebSocketController = Depends(get_websocket_controller),
 ):
-    await manager.connect(websocket)
+    await controller.connect(websocket)
     try:
         while True:
             data = await websocket.receive_json()
-            message = ChatMessage(**data)
-            repository.add(message)
-            await manager.broadcast_json({"type": "message", **message.model_dump()})
+            await controller.handle_json(data)
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
+        controller.disconnect(websocket)
     except Exception:
-        manager.disconnect(websocket)
+        controller.disconnect(websocket)
