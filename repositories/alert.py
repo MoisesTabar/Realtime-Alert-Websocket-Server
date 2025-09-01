@@ -1,20 +1,9 @@
-from collections import deque
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from models.alert import Alert
+from repositories.base import BaseRepository
 
 
 @dataclass(slots=True)
-class AlertRepository:
-    """
-    In-memory store for alerts with fixed max length.
-    """
-
+class AlertRepository(BaseRepository[Alert]):
     maxlen: int = 10
-    _alerts: deque = field(default_factory=lambda: deque(maxlen=10))
-
-    def add(self, alert: Alert) -> None:
-        self._alerts.appendleft(alert)
-
-    def get_all(self) -> list[Alert]:
-        return list(self._alerts)
