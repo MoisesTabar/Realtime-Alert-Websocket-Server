@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from dependencies import get_chats_repo, get_manager
 from managers.connection_manager import ConnectionManager
 from models.message import ChatMessage
-from repositories.chat import ChatRepository
+from repositories.base import BaseRepository
 
 router = APIRouter(tags=["websocket"])
 
@@ -12,7 +12,7 @@ router = APIRouter(tags=["websocket"])
 async def websocket_endpoint(
     websocket: WebSocket,
     manager: ConnectionManager = Depends(get_manager),
-    repository: ChatRepository = Depends(get_chats_repo),
+    repository: BaseRepository = Depends(get_chats_repo),
 ):
     await manager.connect(websocket)
     try:
