@@ -4,11 +4,11 @@ from itertools import count, cycle
 
 from managers.connection_manager import ConnectionManager
 from models.alert import Alert
-from repositories.alert import AlertRepository
+from repositories.base import BaseRepository
 
 
 async def periodic_alert_generator(
-    manager: ConnectionManager, repository: AlertRepository, interval_seconds: int = 10
+    manager: ConnectionManager, repository: BaseRepository, interval_seconds: int = 10
 ) -> None:
     gates = cycle(range(1, 5))
 
